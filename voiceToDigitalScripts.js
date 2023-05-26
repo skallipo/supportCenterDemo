@@ -38,10 +38,10 @@ function sendMessage() {
     serviceType = "";
   }
 
-  /* Genesys("subscribe", "MessagingService.ready", function () {
+  Genesys("subscribe", "MessagingService.ready", function () {
     console.log("**MessagingService.ready");
     Genesys("command", "Messenger.open");
-  }); */
+  });
   Genesys("subscribe", "Messenger.opened", function () {
     Genesys("command", "MessagingService.sendMessage", {
       message: policyType + " " + serviceType,
