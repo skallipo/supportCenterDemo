@@ -21,21 +21,39 @@
     deploymentId: "fe6716f3-bce8-4188-923a-bb733eee9161",
   }
 );
-(function () {
-  let pagePath = window.location.pathname;
-
+sendMessage();
+function sendMessage() {
   const urlParams = new URLSearchParams(window.location.search);
   const name = urlParams.get("name");
   const policyType = urlParams.get("policyType");
   const serviceType = urlParams.get("serviceType");
-  /*let obj = {};
-      obj.messaging = {};
-      obj.messaging.customAttributes = {};
-      obj.messaging.customAttributes.name = urlParams.get('name');
-      obj.messaging.customAttributes.policyType = urlParams.get('policyType');
-      obj.messaging.customAttributes.serviceType = urlParams.get('serviceType');
-      console.log(obj);
-      sendCommand("Database.set", obj);*/
+
+  if (name == null) {
+    name = "";
+  }
+  if (policyType == null) {
+    policyType = "";
+  }
+  if (serviceType == null) {
+    serviceType = "";
+  }
+
+  Genesys("subscribe", "MessagingService.ready", function () {
+    console.log("**MessagingService.ready");
+    Genesys("command", "Messenger.open");
+  });
+  Genesys("subscribe", "Messenger.opened", function () {
+    Genesys("command", "MessagingService.sendMessage", {
+      message: policyType + " " + serviceType,
+    });
+  });
+}
+function voiceToDigital() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const name = urlParams.get("name");
+  const policyType = urlParams.get("policyType");
+  const serviceType = urlParams.get("serviceType");
+
   Genesys("subscribe", "Messenger.ready", function () {
     Genesys("command", "Messenger.open");
   });
@@ -51,12 +69,9 @@
       {},
       function () {
         console.log("**Conversation Started");
-        /*Genesys("command", "MessagingService.sendMessage", {message: policyType + " " + serviceType});*/
-        /*fulfilled callback*/
       },
       function () {
         console.log("**Conversation failed to start");
-        /*rejected callback*/
       }
     );
   });
@@ -74,7 +89,7 @@
       message: policyType + " " + serviceType,
     });
   });
-})();
+}
 
 function identify() {
   let obj = { eventName: "identify" };
