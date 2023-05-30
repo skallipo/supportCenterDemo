@@ -21,7 +21,35 @@
     deploymentId: "fe6716f3-bce8-4188-923a-bb733eee9161",
   }
 );
-sendMessage();
+
+Genesys("subscribe", "Messenger.ready", function () {
+  Genesys("command", "Messenger.open");
+});
+
+attachData();
+
+function attachData() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const name = urlParams.get("name");
+  const messageText = urlParams.get("messageText");
+
+  if (name == null) {
+    name = "";
+  }
+  if (messageText == null) {
+    messageText = "";
+  }
+
+  let obj = {};
+  obj.messaging = {};
+  obj.messaging.customAttributes = {};
+  obj.messaging.customAttributes.customerName = name;
+  obj.messaging.customAttributes.messageText = messageText;
+  console.log("**" + toString(obj));
+  Genesys("command", "Database.set", obj);
+}
+
+//sendMessage();
 function sendMessage() {
   const urlParams = new URLSearchParams(window.location.search);
   const name = urlParams.get("name");
@@ -103,3 +131,6 @@ function identify() {
 function sendCommand(name, obj) {
   Genesys("command", name, obj);
 }
+Genesys("subscribe", "Database.updated", function (e) {
+  console.log(e.data); // Updated database object
+});
