@@ -46,76 +46,9 @@ function attachData() {
   obj.messaging.customAttributes.customerName = name;
   obj.messaging.customAttributes.messageText = messageText;
   console.log("**" + toString(obj));
-  Genesys("command", "Database.set", obj);
-}
 
-//sendMessage();
-function sendMessage() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const name = urlParams.get("name");
-  const policyType = urlParams.get("policyType");
-  const serviceType = urlParams.get("serviceType");
-
-  if (name == null) {
-    name = "";
-  }
-  if (policyType == null) {
-    policyType = "";
-  }
-  if (serviceType == null) {
-    serviceType = "";
-  }
-
-  Genesys("subscribe", "MessagingService.ready", function () {
-    console.log("**MessagingService.ready");
-    Genesys("command", "Messenger.open");
-  });
   Genesys("subscribe", "Messenger.opened", function () {
-    Genesys("command", "MessagingService.sendMessage", {
-      message: policyType + " " + serviceType,
-    });
-  });
-}
-function voiceToDigital() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const name = urlParams.get("name");
-  const policyType = urlParams.get("policyType");
-  const serviceType = urlParams.get("serviceType");
-
-  Genesys("subscribe", "Messenger.ready", function () {
-    Genesys("command", "Messenger.open");
-  });
-  Genesys("subscribe", "Journey.ready", function () {
-    console.log("**Journey.ready.");
-    identify();
-  });
-  Genesys("subscribe", "MessagingService.ready", function () {
-    console.log("**MessagingService.ready");
-    Genesys(
-      "command",
-      "MessagingService.startConversation",
-      {},
-      function () {
-        console.log("**Conversation Started");
-      },
-      function () {
-        console.log("**Conversation failed to start");
-      }
-    );
-  });
-
-  Genesys("subscribe", "MessagingService.started", function ({ data }) {
-    console.log("**MessagingService.started");
-  });
-
-  Genesys("subscribe", "Conversations.ready", function () {
-    console.log("**Conversation.ready");
-  });
-  Genesys("subscribe", "Conversations.opened", function () {
-    console.log("**Conversations.opened");
-    Genesys("command", "MessagingService.sendMessage", {
-      message: policyType + " " + serviceType,
-    });
+    Genesys("command", "Database.set", obj);
   });
 }
 
